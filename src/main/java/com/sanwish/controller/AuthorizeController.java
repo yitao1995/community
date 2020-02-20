@@ -7,13 +7,12 @@ import com.sanwish.mapper.UserMapper;
 import com.sanwish.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Source;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -41,7 +40,7 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
                            @RequestParam(name="state") String state,
-                           HttpServletRequest request){
+                           HttpServletResponse reponse){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         //封装 accessTokenDTO
         accessTokenDTO.setClient_id(clientId);
@@ -54,16 +53,15 @@ public class AuthorizeController {
         GithubUser githubUser = githubProvider.getUser(accessToken);
 
         if(githubUser!=null){
-            //用户不空保存用用户到session中
-            request.getSession().setAttribute("githubUser",githubUser);
-
             User user = new User();
+            String token = UUID.randomUUID().toString();
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setName(githubUser.getName());
-            user.setToken(UUID.randomUUID().toString());
-
+            user.setToken(token);
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+
+            reponse.addCookie(new Cookie("token",token));
 
             userMapper.insert(user);
 
