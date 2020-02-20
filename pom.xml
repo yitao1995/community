@@ -26,7 +26,12 @@
 			<version>1.2.62</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
