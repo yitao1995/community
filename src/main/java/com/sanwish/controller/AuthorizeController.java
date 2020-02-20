@@ -3,13 +3,18 @@ package com.sanwish.controller;
 import com.sanwish.GithubProvider.GithubProvider;
 import com.sanwish.dto.AccessTokenDTO;
 import com.sanwish.dto.GithubUser;
+import com.sanwish.mapper.UserMapper;
+import com.sanwish.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.Source;
+import java.util.UUID;
 
 /**
  * Created by Sanwish on 2020/2/19.
@@ -23,10 +28,15 @@ public class AuthorizeController {
 
     @Value("${github.client.id}")
     private String clientId;
+
     @Value("${github.redirect.uri}")
     private String redirectUri;
+
     @Value("${github.client.secret}")
     private String clientSecret;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
@@ -41,11 +51,22 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret(clientSecret);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
 
-        GithubUser user = githubProvider.getUser(accessToken);
+        GithubUser githubUser = githubProvider.getUser(accessToken);
 
-        if(user!=null){
+        if(githubUser!=null){
             //用户不空保存用用户到session中
-            request.getSession().setAttribute("user",user);
+            request.getSession().setAttribute("githubUser",githubUser);
+
+            User user = new User();
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setName(githubUser.getName());
+            user.setToken(UUID.randomUUID().toString());
+
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+
+            userMapper.insert(user);
+
             return "redirect:/";
 
         }else{
