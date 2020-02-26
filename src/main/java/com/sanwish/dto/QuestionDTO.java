@@ -1,12 +1,13 @@
-package com.sanwish.model;
+package com.sanwish.dto;
 
+import com.sanwish.model.User;
 import lombok.Data;
 
 /**
- * Created by Sanwish on 2020/2/21.
+ * Created by Sanwish on 2020/2/23.
  */
 @Data
-public class Question {
+public class QuestionDTO {
 
     private Integer id;
     private String title;
@@ -18,7 +19,9 @@ public class Question {
     private Integer viewCount;
     private Integer likeCount;
     private Integer commentCount;
-
+    private User user;
 
 }
+
+
 

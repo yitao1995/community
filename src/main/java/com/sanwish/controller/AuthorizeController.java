@@ -38,9 +38,9 @@ public class AuthorizeController {
     private UserMapper userMapper;
 
     @GetMapping("/callback")
-    public String callback(@RequestParam(name="code") String code,
-                           @RequestParam(name="state") String state,
-                           HttpServletResponse reponse){
+    public String callback(@RequestParam(name = "code") String code,
+                           @RequestParam(name = "state") String state,
+                           HttpServletResponse reponse) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         //封装 accessTokenDTO
         accessTokenDTO.setClient_id(clientId);
@@ -52,7 +52,7 @@ public class AuthorizeController {
 
         GithubUser githubUser = githubProvider.getUser(accessToken);
 
-        if(githubUser!=null){
+        if (githubUser != null) {
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setAccountId(String.valueOf(githubUser.getId()));
@@ -60,14 +60,14 @@ public class AuthorizeController {
             user.setToken(token);
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
-
-            reponse.addCookie(new Cookie("token",token));
+            user.setAvatarUrl(githubUser.getAvatarUrl());
+            reponse.addCookie(new Cookie("token", token));
 
             userMapper.insert(user);
 
             return "redirect:/";
 
-        }else{
+        } else {
             return "redirect:/";
         }
 
