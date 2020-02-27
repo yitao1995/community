@@ -1,12 +1,11 @@
 package com.sanwish.mapper;
 
+import com.sanwish.dto.QuestionDTO;
 import com.sanwish.model.Question;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import javax.naming.Name;
 import java.util.List;
 
 /**
@@ -31,6 +30,14 @@ public interface QuestionMapper {
     List<Question> ListByUserId(@Param("userId") Integer userId,
                                 @Param("offset") Integer offset,
                                 @Param("size") Integer size);
+
     @Select("select count(1) from question where creator = #{userId}")
     Integer countByUserId(@Param("userId") Integer userId);
+
+    @Select("select * from question where id = #{id}")
+    Question getById(@Param("id") Integer id);
+
+    @Update("UPDATE question SET title = #{title}, tag = #{tag} , description = #{description} , gmt_Modified = #{gmtModified} where id = #{id} ")
+    void update(Question dbQuestion);
+
 }

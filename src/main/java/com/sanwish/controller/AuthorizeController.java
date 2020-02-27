@@ -3,8 +3,8 @@ package com.sanwish.controller;
 import com.sanwish.GithubProvider.GithubProvider;
 import com.sanwish.dto.AccessTokenDTO;
 import com.sanwish.dto.GithubUser;
-import com.sanwish.mapper.UserMapper;
 import com.sanwish.model.User;
+import com.sanwish.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
@@ -24,18 +25,15 @@ public class AuthorizeController {
     //ctrl+e 切换最近窗口
     @Autowired
     private GithubProvider githubProvider;
-
     @Value("${github.client.id}")
     private String clientId;
-
     @Value("${github.redirect.uri}")
     private String redirectUri;
-
     @Value("${github.client.secret}")
     private String clientSecret;
-
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
+
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
@@ -58,13 +56,9 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setName(githubUser.getName());
             user.setToken(token);
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
             user.setAvatarUrl(githubUser.getAvatarUrl());
+            userService.createOrUpdate(user);
             reponse.addCookie(new Cookie("token", token));
-
-            userMapper.insert(user);
-
             return "redirect:/";
 
         } else {
@@ -72,4 +66,16 @@ public class AuthorizeController {
         }
 
     }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        //返回主页
+        return "redirect:/";
+    }
+
 }

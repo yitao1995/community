@@ -30,13 +30,13 @@ public class ProfileController {
                           Model model) {
 
         //获取user
-        User user = (User) request.getAttribute("user");
+        User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             return "redirect:/";
         }
 
 
-        if ("question".equals(action)) {
+        if ("questions".equals(action)) {
             //提问
             model.addAttribute("section", "question");
             model.addAttribute("sectionName", "我的提问");
