@@ -30,6 +30,7 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+			<version>1.4.197</version>
 		</dependency>
 
 		<dependency>
@@ -109,6 +110,19 @@
 					<user>sa</user>
 					<password>123</password>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>1.4.197</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.mybatis.generator</groupId>
+				<artifactId>mybatis-generator-maven-plugin</artifactId>
+				<version>1.4.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.h2database</groupId>
