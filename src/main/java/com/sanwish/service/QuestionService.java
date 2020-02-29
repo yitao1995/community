@@ -2,6 +2,8 @@ package com.sanwish.service;
 
 import com.sanwish.dto.PaginationDTO;
 import com.sanwish.dto.QuestionDTO;
+import com.sanwish.exception.CustomizeErrorcode;
+import com.sanwish.exception.CustomizeException;
 import com.sanwish.mapper.QuestionMapper;
 import com.sanwish.mapper.UserMapper;
 import com.sanwish.model.Question;
@@ -32,7 +34,7 @@ public class QuestionService {
     public PaginationDTO List(Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
 
-        Integer totalCount = (int )questionMapper.countByExample(new QuestionExample());
+        Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());
 
         Integer totalPage;
 
@@ -76,8 +78,8 @@ public class QuestionService {
         QuestionExample qusetionExample = new QuestionExample();
         qusetionExample.createCriteria()
                 .andCreatorEqualTo(userId);
-        Integer totalCount = (int )questionMapper.countByExample(qusetionExample);
-        
+        Integer totalCount = (int) questionMapper.countByExample(qusetionExample);
+
 
         //计算总页数，
         if (totalCount % size == 0) {
@@ -119,6 +121,9 @@ public class QuestionService {
 
         QuestionDTO questionDTO = new QuestionDTO();
         Question question = questionMapper.selectByPrimaryKey(id);
+        if (question == null) {
+            throw new CustomizeException(CustomizeErrorcode.QUESTION_NOT_FOUND);
+        }
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
         BeanUtils.copyProperties(question, questionDTO);
@@ -128,13 +133,13 @@ public class QuestionService {
 
     public void createOrUpdate(Question question) {
 
-        if(question.getId()==null){
+        if (question.getId() == null) {
             //创建问题
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
             questionMapper.insert(question);
 
-        }else{
+        } else {
 
             Question updateQuestion = new Question();
             updateQuestion.setGmtModified(System.currentTimeMillis());
@@ -144,9 +149,11 @@ public class QuestionService {
             QuestionExample example = new QuestionExample();
             example.createCriteria()
                     .andCreatorEqualTo(question.getId());
-            questionMapper.updateByExampleSelective(updateQuestion, example);
+            int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
+            if (updated != 1) {
+                throw new CustomizeException(CustomizeErrorcode.QUESTION_NOT_FOUND);
+            }
         }
-
 
 
     }
