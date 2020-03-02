@@ -27,6 +27,8 @@ public class QuestionController {
             Model model) {
 
         QuestionDTO questionDTO = questionService.getById(id);
+        //累加评论
+        questionService.incView(id);
         model.addAttribute("question",questionDTO);
         return "question";
     }
