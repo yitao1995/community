@@ -2,7 +2,7 @@ package com.sanwish.service;
 
 import com.sanwish.dto.PaginationDTO;
 import com.sanwish.dto.QuestionDTO;
-import com.sanwish.exception.CustomizeErrorcode;
+import com.sanwish.exception.CustomizeErrorCode;
 import com.sanwish.exception.CustomizeException;
 import com.sanwish.mapper.QuestionExtMapper;
 import com.sanwish.mapper.QuestionMapper;
@@ -10,13 +10,10 @@ import com.sanwish.mapper.UserMapper;
 import com.sanwish.model.Question;
 import com.sanwish.model.QuestionExample;
 import com.sanwish.model.User;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import sun.awt.AWTAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +72,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public PaginationDTO List(Integer userId, Integer page, Integer size) {
+    public PaginationDTO List(Long userId, Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
         //总页数
         Integer totalPage;
@@ -122,12 +119,12 @@ public class QuestionService {
 
     }
 
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
 
         QuestionDTO questionDTO = new QuestionDTO();
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question == null) {
-            throw new CustomizeException(CustomizeErrorcode.QUESTION_NOT_FOUND);
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
@@ -159,14 +156,14 @@ public class QuestionService {
                     .andCreatorEqualTo(question.getId());
             int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
             if (updated != 1) {
-                throw new CustomizeException(CustomizeErrorcode.QUESTION_NOT_FOUND);
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
 
 
     }
 
-    public void incView(Integer id) {
+    public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);

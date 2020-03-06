@@ -5,4 +5,6 @@ package com.sanwish.exception;
  */
 public interface ICustomizeErrorCode {
     String getMessage();
+
+    Integer getCode();
 }
