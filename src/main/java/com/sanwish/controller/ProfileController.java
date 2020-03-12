@@ -2,6 +2,7 @@ package com.sanwish.controller;
 
 import com.sanwish.dto.PaginationDTO;
 import com.sanwish.model.User;
+import com.sanwish.service.NotificationService;
 import com.sanwish.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ public class ProfileController {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     @GetMapping("/profile/{action}")
@@ -40,16 +44,17 @@ public class ProfileController {
             //提问
             model.addAttribute("section", "question");
             model.addAttribute("sectionName", "我的提问");
+            PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
+            model.addAttribute("pagination", paginationDTO);
         } else if ("replies".equals(action)) {
-
+            //回复
+            PaginationDTO paginationDTO = notificationService.list(user.getId(), page, size);
+            Long unreadCount = notificationService.unreadCount(user.getId());
             model.addAttribute("section", "replies");
+            model.addAttribute("pagination", paginationDTO);
+            model.addAttribute("unreadCount", unreadCount);
             model.addAttribute("sectionName", "最新回复");
-
         }
-
-
-        PaginationDTO paginationDTO = questionService.List(user.getId(), page, size);
-        model.addAttribute("pagination", paginationDTO);
 
         return "profile";
     }

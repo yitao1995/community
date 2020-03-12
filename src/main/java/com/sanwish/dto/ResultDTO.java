@@ -5,7 +5,7 @@ import com.sanwish.exception.CustomizeException;
 import lombok.Data;
 
 /**
- * Created by Sanwish on 2020/3/3.
+ * Created by Sa'nwish on 2020/3/3.
  */
 @Data
 public class ResultDTO<T> {
